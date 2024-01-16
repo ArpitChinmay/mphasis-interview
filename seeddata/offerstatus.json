@@ -1,0 +1,22 @@
+[
+    {
+        "offerId": 0,
+        "description": "not applicable"
+    }, 
+    {
+        "offerId": 1,
+        "description": "awaited"
+    },
+    {
+        "offerId": 2,
+        "description": "acceptance requested"
+    },
+    {
+        "offerId": 3,
+        "description": "accepted"
+    },
+    {
+        "offerId": 4,
+        "description": "onboarded"
+    }
+]

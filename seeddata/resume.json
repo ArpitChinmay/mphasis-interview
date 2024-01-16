@@ -1,0 +1,184 @@
+[
+    {
+        "resumeId": 100000,
+        "candidateId": 100000,
+        "candidateName": "Arpit Chinmay",
+        "dateofbirth": "1996-02-29",
+        "WorkEx": {
+            "workexId": 100000,
+            "startDate": "2019-11-12",
+            "endDate": "2022-03-14",
+            "company": "Infosys Ltd.",
+            "role": "Technical Analyst",
+            "description": "Worked as part of premium billing team on .NET projects for Molina Healthcare."
+        },
+        "personalDetails": {
+            "personalDetailsId": 100000,
+            "candidateId": 100000,
+            "phonenumber": "7042787858",
+            "currentCity": "Indore",
+            "currentCountry": "India",
+            "socials": {
+                "socialId": 100000,
+                "linkedinURL": "https://linkedin.com/arpitchinmay",
+                "githubURL": "https://github.com/arpitchinmay",
+                "stack-overflowURL": "https://stackoverflow.com/arpitchinmay"
+            },
+            "skills": ["C#", ".NET Core", ".NET Framework", "MS SQL Server", "SSIS"],
+            "interests": ["WebApp development", "Data Science"],
+            "educationDetails": {
+                "educationId": 1,
+                "candidateId": 100000,
+                "highschool_details": {
+                    "candidateId": 100000,
+                    "schoolName": "Kendriya Vidyalaya No.2 Delhi Cantt.",
+                    "board": "CBSE",
+                    "percentage": 91.2,
+                    "passingYear": 2011
+                },
+                "intermediate_details": {
+                    "candidateId": 100000,
+                    "schoolName": "Kendriya Vidyalaya No.2 Delhi Cantt.",
+                    "board": "CBSE",
+                    "percentage": 84.6,
+                    "passingYear": 2013
+                },
+                "graduation_details": {
+                    "candidateId": 100000,
+                    "college": "University school of Information Technology",
+                    "university": "GuruGobind Singh Indraprastha University",
+                    "startYear": 2014,
+                    "endYear": 2018,
+                    "course": "B.Tech Computer Science",
+                    "percentage": 74.4
+                },
+                "postgrad_details": null,
+                "doctrate_details": null
+            }
+
+        },
+        "resumeAccepted": "false"
+    },
+
+    {
+        "resumeId": 100001,
+        "candidateId": 100001,
+        "candidateName": "Gehna Gupta",
+        "dateofbirth": "1996-11-21",
+        "WorkEx": {
+            "workexId": 100001,
+            "startDate": "2019-11-12",
+            "endDate": "2022-05-14",
+            "company": "Infosys Ltd.",
+            "role": "Technical Analyst",
+            "description": "Worked as part of claims team on .NET projects for Molina Healthcare."
+        },
+        "personalDetails": {
+            "personalDetailsId": 100001,
+            "candidateId": 100001,
+            "phonenumber": "7042787859",
+            "currentCity": "Udaipur",
+            "currentCountry": "India",
+            "socials": {
+                "socialId": 100001,
+                "linkedinURL": "https://linkedin.com/gehnagupta",
+                "githubURL": "https://github.com/gehnagupta",
+                "stack-overflowURL": "https://stackoverflow.com/gehnagupta"
+            },
+            "skills": ["C#", ".NET Core", ".NET Framework", "MS SQL Server", "SSIS"],
+            "interests": ["Data Science", "Machine learning"],
+            "educationDetails": {
+                "educationId": 2,
+                "candidateId": 100001,
+                "highschool_details": {
+                    "candidateId": 100001,
+                    "schoolName": "Kendriya Vidyalaya Udaipur",
+                    "board": "CBSE",
+                    "percentage": 96.2,
+                    "passingYear": 2012
+                },
+                "intermediate_details": {
+                    "candidateId": 100001,
+                    "schoolName": "Kendriya Vidyalaya Udaipur",
+                    "board": "CBSE",
+                    "percentage": 90.6,
+                    "passingYear": 2014
+                },
+                "graduation_details": {
+                    "candidateId": 100001,
+                    "college": "University school of Information Technology",
+                    "university": "S.R.M University",
+                    "startYear": 2014,
+                    "endYear": 2018,
+                    "course": "B.Tech Computer Science",
+                    "percentage": 74.4
+                },
+                "postgrad_details": null,
+                "doctrate_details": null
+            }
+
+        },
+        "resumeAccepted": "true"
+    },
+
+    {
+        "resumeId": 100002,
+        "candidateId": 100002,
+        "candidateName": "Rajnish Pandey",
+        "dateofbirth": "1996-11-21",
+        "WorkEx": {
+            "workexId": 100002,
+            "startDate": "2019-11-12",
+            "endDate": "2022-05-14",
+            "company": "Infosys Ltd.",
+            "role": "Senior System Engineer",
+            "description": "Worked for Royal bank of scotland"
+        },
+        "personalDetails": {
+            "personalDetailsId": 100002,
+            "candidateId": 100002,
+            "phonenumber": "89890807070",
+            "currentCity": "Lucknow",
+            "currentCountry": "India",
+            "socials": {
+                "socialId": 100002,
+                "linkedinURL": "https://linkedin.com/rajnishpandey",
+                "githubURL": "https://github.com/rajnishpandey",
+                "stack-overflowURL": "https://stackoverflow.com/rajnishpandey"
+            },
+            "skills": ["C#", ".NET Core", "RPA"],
+            "interests": ["Robotics"],
+            "educationDetails": {
+                "educationId": 3,
+                "candidateId": 100002,
+                "highschool_details": {
+                    "candidateId": 100002,
+                    "schoolName": "Random convent Lucknow",
+                    "board": "ICSE",
+                    "percentage": 96.2,
+                    "passingYear": 2012
+                },
+                "intermediate_details": {
+                    "candidateId": 100002,
+                    "schoolName": "Random convent Lucknow",
+                    "board": "ICSE",
+                    "percentage": 90.6,
+                    "passingYear": 2014
+                },
+                "graduation_details": {
+                    "candidateId": 100002,
+                    "college": "University school of Information Technology",
+                    "university": "S.R.M University",
+                    "startYear": 2014,
+                    "endYear": 2018,
+                    "course": "B.Tech Computer Science",
+                    "percentage": 74.4
+                },
+                "postgrad_details": null,
+                "doctrate_details": null
+            }
+
+        },
+        "resumeAccepted": "false"
+    }
+]
