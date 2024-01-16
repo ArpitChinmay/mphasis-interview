@@ -1,0 +1,60 @@
+[
+    {
+        "candidateId": 100000,
+        "resumeId": 100000,
+        "levelOne": "true",
+        "levelTwo": "true",
+        "managerial": "true",
+        "offerRolledOut": "true",
+        "offerStatus": 2
+    },
+    
+    {
+        "candidateId": 100001,
+        "resumeId": 100001,
+        "levelOne": "true",
+        "levelTwo": "true",
+        "managerial": "true",
+        "offerRolledOut": "true",
+        "offerStatus": 2
+    },
+
+    {
+        "candidateId": 100002,
+        "resumeId": 100002,
+        "levelOne": "true",
+        "levelTwo": "true",
+        "managerial": "true",
+        "offerRolledOut": "false",
+        "offerStatus": 1
+    },
+
+    {
+        "candidateId": 100003,
+        "resumeId": 100003,
+        "levelOne": "true",
+        "levelTwo": "true",
+        "managerial": "false",
+        "offerRolledOut": "false",
+        "offerStatus": 0
+    },
+    {
+        "candidateId": 100004,
+        "resumeId": 100004,
+        "levelOne": "true",
+        "levelTwo": "false",
+        "managerial": "false",
+        "offerRolledOut": "false",
+        "offerStatus": 0
+    },
+    {
+        "candidateId": 100005,
+        "resumeId": 100005,
+        "levelOne": "false",
+        "levelTwo": "false",
+        "managerial": "false",
+        "offerRolledOut": "false",
+        "offerStatus": 0
+    }
+
+]
