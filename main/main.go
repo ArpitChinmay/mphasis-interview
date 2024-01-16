@@ -1,11 +1,8 @@
 package main
 
 import (
-	// "encoding/json"
 	"net/http"
 	"strconv"
-
-	// "os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -149,7 +146,8 @@ func GetAllCandidatesLevelTwo(c *gin.Context) {
 	DetailsOfAllCandidates := make([]Interview, 0)
 	for i := 0; i < len(InterviewDetails); i++ {
 		if InterviewDetails[i].LevelOne {
-			DetailsOfAllCandidates = append(DetailsOfAllCandidates, InterviewDetails[i])
+			DetailsOfAllCandidates = append(DetailsOfAllCandidates, I
+			      nterviewDetails[i])
 		}
 	}
 	c.JSON(http.StatusOK, DetailsOfAllCandidates)
@@ -214,6 +212,98 @@ func GetCandidatesManagerial(c *gin.Context) {
 		DetailsOfRejectedCandidates, _ := GetDetailsOfRejectedCandidatesManagerialRound()
 		c.JSON(http.StatusOK, DetailsOfRejectedCandidates)
 	}
+}
+
+// Show the count of candidates selected or rejected in level two
+func GetLevelTwoCount(c *gin.Context) {
+	selected, err := strconv.ParseBool(c.Query("selected"))
+	if err != nil {
+		c.JSON(http.StatusNoContent, gin.H{"error": "problem reading choice..."})
+	}
+
+	if selected {
+		_, count := GetDetailsOfSelectedCandidatesLevelTwo()
+		c.JSON(http.StatusOK, count)
+	} else {
+		_, count := GetDetailsOfRejectedCandidatesLevelTwo()
+		c.JSON(http.StatusOK, count)
+	}
+}
+
+// show the count of candidates selected or rejected in managerial round
+func GetManagerialCount(c *gin.Context) {
+	selected, err := strconv.ParseBool(c.Query("selected"))
+	if err != nil {
+		c.JSON(http.StatusNoContent, gin.H{"error": "problem reading choice..."})
+	}
+
+	if selected {
+		_, count := GetDetailsOfSelectedCandidatesManagerialRound()
+		c.JSON(http.StatusOK, count)
+	} else {
+		_, count := GetDetailsOfRejectedCandidatesManagerialRound()
+		c.JSON(http.StatusOK, count)
+	}
+}
+
+func GetDetailsOfSelectedCandidatesLevelOne() []Interview {
+	DetailsOfSelectedCandidates := make([]Interview, 0)
+	for i := 0; i < len(InterviewDetails); i++ {
+		if InterviewDetails[i].LevelOne {
+			DetailsOfSelectedCandidates = append(DetailsOfSelectedCandidates, InterviewDetails[i])
+		}
+	}
+	return DetailsOfSelectedCandidates
+}
+
+func GetDetailsOfRejectedCandidatesLevelOne() []Interview {
+	DetailsOfRejectedCandidates := make([]Interview, 0)
+	for i := 0; i < len(InterviewDetails); i++ {
+		if !InterviewDetails[i].LevelOne {
+			DetailsOfRejectedCandidates = append(DetailsOfRejectedCandidates, InterviewDetails[i])
+		}
+	}
+	return DetailsOfRejectedCandidates
+}
+
+func GetDetailsOfSelectedCandidatesLevelTwo() ([]Interview, int) {
+	DetailsOfSelectedCandidates := make([]Interview, 0)
+	for i := 0; i < len(InterviewDetails); i++ {
+		if InterviewDetails[i].LevelOne && InterviewDetails[i].LevelTwo {
+			DetailsOfSelectedCandidates = append(DetailsOfSelectedCandidates, InterviewDetails[i])
+		}
+	}
+	return DetailsOfSelectedCandidates, len(DetailsOfSelectedCandidates)
+}
+
+func GetDetailsOfRejectedCandidatesLevelTwo() ([]Interview, int) {
+	DetailsOfRejectedCandidates := make([]Interview, 0)
+	for i := 0; i < len(InterviewDetails); i++ {
+		if InterviewDetails[i].LevelOne && !InterviewDetails[i].LevelTwo {
+			DetailsOfRejectedCandidates = append(DetailsOfRejectedCandidates, InterviewDetails[i])
+		}
+	}
+	return DetailsOfRejectedCandidates, len(DetailsOfRejectedCandidates)
+}
+
+func GetDetailsOfSelectedCandidatesManagerialRound() ([]Interview, int) {
+	DetailsOfSelectedCandidates := make([]Interview, 0)
+	for i := 0; i < len(InterviewDetails); i++ {
+		if InterviewDetails[i].LevelOne && InterviewDetails[i].LevelTwo && InterviewDetails[i].Managerial {
+			DetailsOfSelectedCandidates = append(DetailsOfSelectedCandidates, InterviewDetails[i])
+		}
+	}
+	return DetailsOfSelectedCandidates, len(DetailsOfSelectedCandidates)
+}
+
+func GetDetailsOfRejectedCandidatesManagerialRound() ([]Interview, int) {
+	DetailsOfRejectedCandidates := make([]Interview, 0)
+	for i := 0; i < len(InterviewDetails); i++ {
+		if InterviewDetails[i].LevelOne && InterviewDetails[i].LevelTwo && !InterviewDetails[i].Managerial {
+			DetailsOfRejectedCandidates = append(DetailsOfRejectedCandidates, InterviewDetails[i])
+		}
+	}
+	return DetailsOfRejectedCandidates, len(DetailsOfRejectedCandidates)
 }
 
 // Show the count of candidates selected or rejected in level two
