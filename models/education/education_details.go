@@ -1,4 +1,4 @@
-package education
+package models
 
 type EducationDetails struct {
 	EducationId  int          `json:"educationId"`

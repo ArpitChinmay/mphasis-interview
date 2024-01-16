@@ -1,4 +1,4 @@
-package education
+package models
 
 type PostGrad struct {
 	CandidateId int     `json:"candidateId"`

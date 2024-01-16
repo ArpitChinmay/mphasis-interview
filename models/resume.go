@@ -7,7 +7,7 @@ type Resume struct {
 	CandidateId     int             `json:"candidateId"`
 	Name            string          `json:"candidateName"`
 	Dob             time.Time       `json:"dateofbirth"`
-	WorkEx          Workex          `json:"WorkEx"`
+	WordEx          Workex          `json:"WorkEx"`
 	PersonalDetails PersonalDetails `json:"personalDetails"`
-	ResumeStatus    bool            `json:"resumeAccepted"` // Resume status can be accepted or rejected
+	ResumeStatus    bool            `json:"resumeStatus"` // Resume status can be accepted or rejected
 }

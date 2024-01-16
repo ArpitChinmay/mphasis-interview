@@ -1,4 +1,4 @@
-package education
+package models
 
 type Intermediate struct {
 	CandidateId int     `json:"candidateId"`

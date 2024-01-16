@@ -1,6 +1,6 @@
 package models
 
-import "github.com/ArpitChinmay/mphasis-interview/models"
+import models "mphasis-interview/models/education"
 
 type PersonalDetails struct {
 	PersonalDetailsId  int                     `json:"personalDetailsId"`
