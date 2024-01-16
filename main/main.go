@@ -20,10 +20,9 @@ type Interview struct {
 type OfferStatus struct {
 	// status can be
 	// 0. Not applicable
-	// 1. awaited
-	// 2. acceptance requested
-	// 3. accepted
-	// 4. onboarded
+	// 1. acceptance awaited
+	// 2. accepted
+	// 3. onboarded
 	OfferId     int    `json:"offerId"`
 	Description string `json:"description"`
 }
@@ -106,6 +105,16 @@ var InterviewDetails []Interview = []Interview{
 		OfferRolledOut: false,
 		OfferStatus:    2,
 	},
+
+	{
+		CandidateId:    100008,
+		ResumeId:       100008,
+		LevelOne:       true,
+		LevelTwo:       true,
+		Managerial:     true,
+		OfferRolledOut: true,
+		OfferStatus:    3,
+	},
 }
 var OfferStatusDetails []OfferStatus
 
@@ -119,6 +128,7 @@ func main() {
 	router.GET("/interview/managerial/search", GetCandidatesManagerial)
 	router.GET("/interview/level2/count/search", GetLevelTwoCount)
 	router.GET("/interview/managerial/count/search", GetManagerialCount)
+	router.GET("/interview/offer/", GetCandidatesOfferedPostion)
 	router.Run(":5000")
 }
 
@@ -146,8 +156,7 @@ func GetAllCandidatesLevelTwo(c *gin.Context) {
 	DetailsOfAllCandidates := make([]Interview, 0)
 	for i := 0; i < len(InterviewDetails); i++ {
 		if InterviewDetails[i].LevelOne {
-			DetailsOfAllCandidates = append(DetailsOfAllCandidates, I
-			      nterviewDetails[i])
+			DetailsOfAllCandidates = append(DetailsOfAllCandidates, InterviewDetails[i])
 		}
 	}
 	c.JSON(http.StatusOK, DetailsOfAllCandidates)
@@ -246,6 +255,56 @@ func GetManagerialCount(c *gin.Context) {
 	}
 }
 
+// show the candidates who are offered position.
+func GetCandidatesOfferedPostion(c *gin.Context) {
+	selected, err_acpt := strconv.ParseInt(c.Query("accepted"), 0, 32)
+	count, err_count := strconv.ParseBool(c.Query("count"))
+	if err_acpt != nil || err_count != nil {
+		c.JSON(http.StatusNoContent, gin.H{"error": "problem reading acceptance feild or count feild"})
+	}
+
+	// User is requesting for a count of candidates
+	if count {
+		// offer acceptance awaited
+		if selected == 1 {
+			_, count := GetOfferedCandidatesDetailsWithAwaitedAcceptance()
+			c.JSON(http.StatusOK, count)
+		}
+
+		// offer accepted.
+		if selected == 2 {
+			_, count := GetOfferedCandidatedDetailsWithOfferAccepted()
+			c.JSON(http.StatusOK, count)
+		}
+
+		// onboarded candidate.
+		if selected == 3 {
+			_, count := GetOfferedCandidateDetailsWhoAreOnboarded()
+			c.JSON(http.StatusOK, count)
+		}
+		// User is requesting for details of candidates to whom offer is rolled out.
+	} else {
+		// offer acceptance awaited
+		if selected == 1 {
+			OfferedCandidates, _ := GetOfferedCandidatesDetailsWithAwaitedAcceptance()
+			c.JSON(http.StatusOK, OfferedCandidates)
+		}
+
+		// offer accepted.
+		if selected == 2 {
+			OfferedCandidates, _ := GetOfferedCandidatedDetailsWithOfferAccepted()
+			c.JSON(http.StatusOK, OfferedCandidates)
+		}
+
+		// onboarded candidate
+		if selected == 3 {
+			OfferedCandidate, _ := GetOfferedCandidateDetailsWhoAreOnboarded()
+			c.JSON(http.StatusOK, OfferedCandidate)
+		}
+	}
+
+}
+
 func GetDetailsOfSelectedCandidatesLevelOne() []Interview {
 	DetailsOfSelectedCandidates := make([]Interview, 0)
 	for i := 0; i < len(InterviewDetails); i++ {
@@ -304,4 +363,34 @@ func GetDetailsOfRejectedCandidatesManagerialRound() ([]Interview, int) {
 		}
 	}
 	return DetailsOfRejectedCandidates, len(DetailsOfRejectedCandidates)
+}
+
+func GetOfferedCandidatesDetailsWithAwaitedAcceptance() ([]Interview, int) {
+	DetailsOfOfferedCandidates := make([]Interview, 0)
+	for i := 0; i < len(InterviewDetails); i++ {
+		if InterviewDetails[i].OfferRolledOut && InterviewDetails[i].OfferStatus == 1 {
+			DetailsOfOfferedCandidates = append(DetailsOfOfferedCandidates, InterviewDetails[i])
+		}
+	}
+	return DetailsOfOfferedCandidates, len(DetailsOfOfferedCandidates)
+}
+
+func GetOfferedCandidatedDetailsWithOfferAccepted() ([]Interview, int) {
+	DetailsOfOfferedCandidates := make([]Interview, 0)
+	for i := 0; i < len(InterviewDetails); i++ {
+		if InterviewDetails[i].OfferRolledOut && InterviewDetails[i].OfferStatus == 2 {
+			DetailsOfOfferedCandidates = append(DetailsOfOfferedCandidates, InterviewDetails[i])
+		}
+	}
+	return DetailsOfOfferedCandidates, len(DetailsOfOfferedCandidates)
+}
+
+func GetOfferedCandidateDetailsWhoAreOnboarded() ([]Interview, int) {
+	DetailsOfOfferedCandidates := make([]Interview, 0)
+	for i := 0; i < len(InterviewDetails); i++ {
+		if InterviewDetails[i].OfferRolledOut && InterviewDetails[i].OfferStatus == 3 {
+			DetailsOfOfferedCandidates = append(DetailsOfOfferedCandidates, InterviewDetails[i])
+		}
+	}
+	return DetailsOfOfferedCandidates, len(DetailsOfOfferedCandidates)
 }
