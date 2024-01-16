@@ -146,7 +146,8 @@ func GetAllCandidatesLevelTwo(c *gin.Context) {
 	DetailsOfAllCandidates := make([]Interview, 0)
 	for i := 0; i < len(InterviewDetails); i++ {
 		if InterviewDetails[i].LevelOne {
-			DetailsOfAllCandidates = append(DetailsOfAllCandidates, InterviewDetails[i])
+			DetailsOfAllCandidates = append(DetailsOfAllCandidates, I
+			      nterviewDetails[i])
 		}
 	}
 	c.JSON(http.StatusOK, DetailsOfAllCandidates)
