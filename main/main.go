@@ -4,22 +4,15 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"strconv"
 
 	// "strconv"
 
+	"github.com/ArpitChinmay/mphasis-interview/handlers"
+	dtomodels "github.com/ArpitChinmay/mphasis-interview/main/dtoModels"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 )
-
-type Interview struct {
-	CandidateId    string `json:"candidateId"`
-	ResumeId       string `json:"resumeId"`
-	LevelOne       int    `json:"levelOne"`
-	LevelTwo       int    `json:"levelTwo"`
-	Managerial     int    `json:"managerial"`
-	OfferRolledOut int    `json:"offerRolledOut"`
-	OfferStatus    int    `json:"offerStatus"`
-}
 
 type OfferStatus struct {
 	// status can be
@@ -31,15 +24,16 @@ type OfferStatus struct {
 	Description string `json:"description"`
 }
 
-var InterviewDetails []Interview = make([]Interview, 0)
-
 // var OfferStatusDetails []OfferStatus
 
 var DB *sql.DB
 
+var interviewHandler *handlers.InterviewHandler
+
 func main() {
 	router := gin.Default()
-	router.GET("/interview/level1", GetAllCandidatesLevelOne)
+	router.GET("/interview/:level/", GetCandidatesInterviewDetails)
+	router.GET("/interview/:level/search", GetSpecificCandidatesAtLevel)
 	// router.GET("/interview/level2", GetAllCandidatesLevelTwo)
 	// router.GET("/interview/managerial", GetAllCandidatesManagerial)
 	// router.GET("/interview/level1/search", GetCandidatesLevelOne)
@@ -53,12 +47,6 @@ func main() {
 
 // Seed the temporary data for Interview details and offer status on starting the application.
 func init() {
-	// InterviewDetails = make([]Interview, 0)
-	// OfferStatusDetails = make([]OfferStatus, 0)
-	// file, _ := os.ReadFile("interview-details")
-	// _ = json.Unmarshal([]byte(file), &InterviewDetails)
-	// file, _ = os.ReadFile("offerstatus")
-	// _ = json.Unmarshal([]byte(file), &OfferStatusDetails)
 	db, err := sql.Open("sqlite3", "../db/candidateData")
 	if err != nil {
 		log.Println("could not connect to the database...")
@@ -66,32 +54,250 @@ func init() {
 	}
 	log.Println("Connected to database...")
 	DB = db
-	rows, err := DB.Query("SELECT CandidateId, ResumeId, LevelOne, LevelTwo, Managerial, OfferRolledOut, OfferStatus FROM interview")
-
-	if err != nil {
-		log.Println("error occurred while reading the database...")
-		log.Fatal(err)
-	}
-
-	for rows.Next() {
-		candidate := Interview{}
-		err = rows.Scan(&candidate.CandidateId, &candidate.ResumeId, &candidate.LevelOne, &candidate.LevelTwo, &candidate.Managerial, &candidate.OfferRolledOut, &candidate.OfferStatus)
-		if err != nil {
-			log.Println("error reading the data into rows...")
-			log.Fatal(err)
-		}
-		InterviewDetails = append(InterviewDetails, candidate)
-	}
-	defer rows.Close()
+	interviewHandler = new(handlers.InterviewHandler)
+	log.Println("created interviewHandler object", interviewHandler)
 }
 
-// Show the list of all candidates with interview level 1 selected and rejected.
-func GetAllCandidatesLevelOne(c *gin.Context) {
-	DetailsOfAllCandidates := make([]Interview, 0)
-	for i := 0; i < len(InterviewDetails); i++ {
-		DetailsOfAllCandidates = append(DetailsOfAllCandidates, InterviewDetails[i])
+func GetCandidatesInterviewDetails(c *gin.Context) {
+	level, err := strconv.ParseInt(c.Param("level"), 0, 32)
+	if err != nil {
+		c.JSON(http.StatusNoContent, gin.H{"error": "problem reading level..."})
 	}
-	c.JSON(http.StatusOK, DetailsOfAllCandidates)
+	// Show the list of all candidates with interview level 1 selected and rejected.
+	if level == 1 {
+		detailsOfCandidatesDTO, _, err := getCandidateInterviewDetailsAtLevelOne(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "some error occurred..."})
+		}
+		c.JSON(http.StatusOK, detailsOfCandidatesDTO)
+	} else if level == 2 {
+		detailsOfCandidatesDTO, _, err := getCandidateInterviewDetailsAtLevelTwo(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "some error occurred..."})
+		}
+		c.JSON(http.StatusOK, detailsOfCandidatesDTO)
+	} else if level == 3 {
+		detailsOfCandidatesDTO, _, err := getCandidateInterviewDetailsAtLevelThree(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "some error occurred..."})
+		}
+		c.JSON(http.StatusOK, detailsOfCandidatesDTO)
+	} else {
+		c.JSON(http.StatusNotImplemented, gin.H{"error": "feature not implemented yet"})
+	}
+}
+
+func GetSpecificCandidatesAtLevel(c *gin.Context) {
+	level, err := strconv.ParseInt(c.Param("level"), 0, 32)
+	selected, err2 := strconv.ParseBool(c.Query("selected"))
+	count, err3 := strconv.ParseBool(c.Query("count"))
+	if err != nil || err2 != nil || err3 != nil {
+		c.JSON(http.StatusNoContent, gin.H{"error": "problem reading url params..."})
+	}
+	if level == 1 {
+		if selected {
+			detailsOfCandidatesDTO, datacount, err := getSelectedCandidateInterviewDetailsAtLevelOne(c)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "some error occurred..."})
+			}
+			if !count {
+				c.JSON(http.StatusOK, detailsOfCandidatesDTO)
+			} else {
+				c.JSON(http.StatusOK, datacount)
+			}
+		} else {
+			detailsOfCandidatesDTO, datacount, err := getRejectedCandidateInterviewDetailsAtLevelOne(c)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "some error occurred..."})
+			}
+			if !count {
+				c.JSON(http.StatusOK, detailsOfCandidatesDTO)
+			} else {
+				c.JSON(http.StatusOK, datacount)
+			}
+		}
+
+	} else if level == 2 {
+		if selected {
+			detailsOfCandidatesDTO, datacount, err := getSelectedCandidateInterviewDetailsAtLevelTwo(c)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "some error occurred..."})
+			}
+			if !count {
+				c.JSON(http.StatusOK, detailsOfCandidatesDTO)
+			} else {
+				c.JSON(http.StatusOK, datacount)
+			}
+		} else {
+			detailsOfCandidatesDTO, datacount, err := getRejectedCandidateInterviewDetailsAtLevelTwo(c)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "some error occurred..."})
+			}
+			if !count {
+				c.JSON(http.StatusOK, detailsOfCandidatesDTO)
+			} else {
+				c.JSON(http.StatusOK, datacount)
+			}
+		}
+	} else if level == 3 {
+		if selected {
+			detailsOfCandidatesDTO, datacount, err := getSelectedCandidateInterviewDetailsAtLevelThree(c)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "some error occurred..."})
+			}
+			if !count {
+				c.JSON(http.StatusOK, detailsOfCandidatesDTO)
+			} else {
+				c.JSON(http.StatusOK, datacount)
+			}
+		} else {
+			detailsOfCandidatesDTO, datacount, err := getRejectedCandidateInterviewDetailsAtLevelThree(c)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "some error occurred..."})
+			}
+			if !count {
+				c.JSON(http.StatusOK, detailsOfCandidatesDTO)
+			} else {
+				c.JSON(http.StatusOK, datacount)
+			}
+		}
+	}
+
+}
+
+func getCandidateInterviewDetailsAtLevelOne(c *gin.Context) ([]dtomodels.InterviewDTO, int, error) {
+	detailsOfCandidatesDTO := []dtomodels.InterviewDTO{}
+	DetailsOfAllCandidates, count, err := interviewHandler.GetAllCandidatesAtLevelOne(c, DB)
+	if err != nil {
+		return detailsOfCandidatesDTO, 0, err
+	}
+
+	for _, candidate := range DetailsOfAllCandidates {
+		candidateDTO := dtomodels.InterviewDTO{}
+		result := candidateDTO.MapInterviewDetails(&candidate)
+		detailsOfCandidatesDTO = append(detailsOfCandidatesDTO, result)
+	}
+	return detailsOfCandidatesDTO, count, nil
+}
+
+func getCandidateInterviewDetailsAtLevelTwo(c *gin.Context) ([]dtomodels.InterviewDTO, int, error) {
+	detailsOfCandidatesDTO := []dtomodels.InterviewDTO{}
+	DetailsOfAllCandidates, count, err := interviewHandler.GetAllCandidatesAtLevelTwo(c, DB)
+	if err != nil {
+		return detailsOfCandidatesDTO, 0, err
+	}
+
+	for _, candidate := range DetailsOfAllCandidates {
+		candidateDTO := dtomodels.InterviewDTO{}
+		result := candidateDTO.MapInterviewDetails(&candidate)
+		detailsOfCandidatesDTO = append(detailsOfCandidatesDTO, result)
+	}
+	return detailsOfCandidatesDTO, count, nil
+}
+
+func getCandidateInterviewDetailsAtLevelThree(c *gin.Context) ([]dtomodels.InterviewDTO, int, error) {
+	detailsOfCandidatesDTO := []dtomodels.InterviewDTO{}
+	DetailsOfAllCandidates, count, err := interviewHandler.GetAllCandidatesAtLevelThree(c, DB)
+	if err != nil {
+		return detailsOfCandidatesDTO, 0, err
+	}
+
+	for _, candidate := range DetailsOfAllCandidates {
+		candidateDTO := dtomodels.InterviewDTO{}
+		result := candidateDTO.MapInterviewDetails(&candidate)
+		detailsOfCandidatesDTO = append(detailsOfCandidatesDTO, result)
+	}
+	return detailsOfCandidatesDTO, count, nil
+}
+
+func getSelectedCandidateInterviewDetailsAtLevelOne(c *gin.Context) ([]dtomodels.InterviewDTO, int, error) {
+	detailsOfCandidatesDTO := []dtomodels.InterviewDTO{}
+	DetailsOfAllCandidates, count, err := interviewHandler.GetSelectedCandidatesAtLevelOne(c, DB)
+	if err != nil {
+		return detailsOfCandidatesDTO, 0, err
+	}
+
+	for _, candidate := range DetailsOfAllCandidates {
+		candidateDTO := dtomodels.InterviewDTO{}
+		result := candidateDTO.MapInterviewDetails(&candidate)
+		detailsOfCandidatesDTO = append(detailsOfCandidatesDTO, result)
+	}
+	return detailsOfCandidatesDTO, count, nil
+}
+
+func getSelectedCandidateInterviewDetailsAtLevelTwo(c *gin.Context) ([]dtomodels.InterviewDTO, int, error) {
+	detailsOfCandidatesDTO := []dtomodels.InterviewDTO{}
+	DetailsOfAllCandidates, count, err := interviewHandler.GetSelectedCandidatesAtLevelTwo(c, DB)
+	if err != nil {
+		return detailsOfCandidatesDTO, 0, err
+	}
+
+	for _, candidate := range DetailsOfAllCandidates {
+		candidateDTO := dtomodels.InterviewDTO{}
+		result := candidateDTO.MapInterviewDetails(&candidate)
+		detailsOfCandidatesDTO = append(detailsOfCandidatesDTO, result)
+	}
+	return detailsOfCandidatesDTO, count, nil
+}
+
+func getSelectedCandidateInterviewDetailsAtLevelThree(c *gin.Context) ([]dtomodels.InterviewDTO, int, error) {
+	detailsOfCandidatesDTO := []dtomodels.InterviewDTO{}
+	DetailsOfAllCandidates, count, err := interviewHandler.GetSelectedCandidatesAtLevelThree(c, DB)
+	if err != nil {
+		return detailsOfCandidatesDTO, 0, err
+	}
+
+	for _, candidate := range DetailsOfAllCandidates {
+		candidateDTO := dtomodels.InterviewDTO{}
+		result := candidateDTO.MapInterviewDetails(&candidate)
+		detailsOfCandidatesDTO = append(detailsOfCandidatesDTO, result)
+	}
+	return detailsOfCandidatesDTO, count, nil
+}
+
+func getRejectedCandidateInterviewDetailsAtLevelOne(c *gin.Context) ([]dtomodels.InterviewDTO, int, error) {
+	detailsOfCandidatesDTO := []dtomodels.InterviewDTO{}
+	DetailsOfAllCandidates, count, err := interviewHandler.GetRejectedCandidatesAtLevelOne(c, DB)
+	if err != nil {
+		return detailsOfCandidatesDTO, 0, err
+	}
+
+	for _, candidate := range DetailsOfAllCandidates {
+		candidateDTO := dtomodels.InterviewDTO{}
+		result := candidateDTO.MapInterviewDetails(&candidate)
+		detailsOfCandidatesDTO = append(detailsOfCandidatesDTO, result)
+	}
+	return detailsOfCandidatesDTO, count, nil
+}
+
+func getRejectedCandidateInterviewDetailsAtLevelTwo(c *gin.Context) ([]dtomodels.InterviewDTO, int, error) {
+	detailsOfCandidatesDTO := []dtomodels.InterviewDTO{}
+	DetailsOfAllCandidates, count, err := interviewHandler.GetRejectedCandidatesAtLevelTwo(c, DB)
+	if err != nil {
+		return detailsOfCandidatesDTO, 0, err
+	}
+
+	for _, candidate := range DetailsOfAllCandidates {
+		candidateDTO := dtomodels.InterviewDTO{}
+		result := candidateDTO.MapInterviewDetails(&candidate)
+		detailsOfCandidatesDTO = append(detailsOfCandidatesDTO, result)
+	}
+	return detailsOfCandidatesDTO, count, nil
+}
+
+func getRejectedCandidateInterviewDetailsAtLevelThree(c *gin.Context) ([]dtomodels.InterviewDTO, int, error) {
+	detailsOfCandidatesDTO := []dtomodels.InterviewDTO{}
+	DetailsOfAllCandidates, count, err := interviewHandler.GetRejectedCandidatesAtLevelThree(c, DB)
+	if err != nil {
+		return detailsOfCandidatesDTO, 0, err
+	}
+
+	for _, candidate := range DetailsOfAllCandidates {
+		candidateDTO := dtomodels.InterviewDTO{}
+		result := candidateDTO.MapInterviewDetails(&candidate)
+		detailsOfCandidatesDTO = append(detailsOfCandidatesDTO, result)
+	}
+	return detailsOfCandidatesDTO, count, nil
 }
 
 // // show the list of all candidates at level 2 selected or rejected
