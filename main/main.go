@@ -14,18 +14,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type OfferStatus struct {
-	// status can be
-	// 0. Not applicable
-	// 1. acceptance awaited
-	// 2. accepted
-	// 3. onboarded
-	OfferId     int    `json:"offerId"`
-	Description string `json:"description"`
-}
-
-// var OfferStatusDetails []OfferStatus
-
 var DB *sql.DB
 
 var interviewHandler *handlers.InterviewHandler
