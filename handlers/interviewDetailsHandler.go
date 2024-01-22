@@ -120,3 +120,36 @@ func (handler *InterviewHandler) GetRejectedCandidatesAtLevelThree(c *gin.Contex
 	return handler.interviewDetails, len(handler.interviewDetails), nil
 }
 
+func (handler *InterviewHandler) GetOfferedCandidatesThatHaveAccepted(c *gin.Context, db *sql.DB) ([]models.Interview, int, error) {
+	var err error
+	handler = NewInterviewHandler(c, db)
+	handler.interviewDetails, err = handler.reader.ReadOfferedCandidateDataWhoAcceptedOffer(db)
+	if err != nil {
+		log.Fatal(err)
+		return nil, 0, errors.New("An error occurred while fetching the data")
+	}
+	return handler.interviewDetails, len(handler.interviewDetails), nil
+}
+
+func (handler *InterviewHandler) GetOfferedCandidatesThatHaveAcceptanceAwaited(c *gin.Context, db *sql.DB) ([]models.Interview, int, error) {
+	var err error
+	handler = NewInterviewHandler(c, db)
+	handler.interviewDetails, err = handler.reader.ReadOfferedCandidateDataWithAcceptanceAwaited(db)
+	if err != nil {
+		log.Fatal(err)
+		return nil, 0, errors.New("An error occurred while fetching the data")
+	}
+	return handler.interviewDetails, len(handler.interviewDetails), nil
+}
+
+func (handler *InterviewHandler) GetOfferedCandidatesThatHaveAcceptedAndOnboarded(c *gin.Context, db *sql.DB) ([]models.Interview, int, error) {
+	var err error
+	handler = NewInterviewHandler(c, db)
+	handler.interviewDetails, err = handler.reader.ReadOfferedCandidateDataWithOfferAcceptedAndOnboarded(db)
+	if err != nil {
+		log.Fatal(err)
+		return nil, 0, errors.New("An error occurred while fetching the data")
+	}
+	return handler.interviewDetails, len(handler.interviewDetails), nil
+}
+
